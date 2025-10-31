@@ -147,9 +147,10 @@ def train_model(model_name: str, config_path: str, device: str = None):
     model = model.to(device)
 
     # 옵티마이저 및 스케줄러 (weight decay 추가로 정규화 강화)
-    optimizer = AdamW(model.parameters(), lr=config['lr'], weight_decay=0.01)
+    # Weight decay 약간 낮춤
+    optimizer = AdamW(model.parameters(), lr=config['lr'], weight_decay=0.005)
     scheduler = ReduceLROnPlateau(
-        optimizer, mode='max', patience=2, factor=0.5, min_lr=1e-6)
+        optimizer, mode='max', patience=3, factor=0.7, min_lr=1e-7)  # 더 부드러운 학습률 감소
     criterion = nn.CrossEntropyLoss()
 
     # 학습
@@ -176,17 +177,17 @@ def train_model(model_name: str, config_path: str, device: str = None):
         logger.info(
             f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}, Val Precision: {val_precision:.4f}, Val Recall: {val_recall:.4f}, Val F1: {val_f1:.4f}")
 
-        # Best model 저장 (F1과 accuracy의 가중 평균 사용)
-        # 대회 평가 기준이 F1이므로 F1에 더 높은 가중치 부여
-        combined_score = 0.7 * val_f1 + 0.3 * val_accuracy
+        # Best model 저장 (Accuracy 우선, F1도 고려)
+        # Accuracy를 최우선으로 하되 F1도 함께 고려하는 하이브리드 접근
+        combined_score = 0.6 * val_accuracy + 0.4 * val_f1
 
-        # combined_score 또는 accuracy가 개선되면 저장
+        # Accuracy 또는 combined_score가 개선되면 저장
         should_save = False
-        if combined_score > best_combined:
-            best_combined = combined_score
-            should_save = True
         if val_accuracy > best_accuracy:
             best_accuracy = val_accuracy
+            should_save = True
+        elif combined_score > best_combined:  # Accuracy가 같으면 combined score 고려
+            best_combined = combined_score
             should_save = True
 
         if should_save:

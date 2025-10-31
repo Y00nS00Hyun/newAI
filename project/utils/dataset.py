@@ -329,8 +329,9 @@ def build_dataloaders(
         max_vocab_size=max_vocab_size,
         text_fields=tuple(text_fields),
         augment=True,  # 기본적으로 증강 활성화
-        p_delete=0.15,
-        p_swap=0.15,
+        p_delete=0.12,  # 증강 강도 약간 낮춤 (원본 데이터에 더 가깝게)
+        p_swap=0.12,
+        keep_ratio_if_delete=0.88,  # 단어 유지 비율 증가
     )
 
     return build_dataloaders_from_config(cfg)

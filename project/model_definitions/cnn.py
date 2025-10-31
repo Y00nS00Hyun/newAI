@@ -34,7 +34,8 @@ class TextCNN(nn.Module):
 
         self.embedding = nn.Embedding(
             vocab_size, embedding_dim, padding_idx=padding_idx)
-        self.embedding_dropout = nn.Dropout(dropout * 0.3)  # Embedding dropout 추가
+        self.embedding_dropout = nn.Dropout(
+            dropout * 0.25)  # Embedding dropout (약간 낮춤)
 
         # 각 필터 크기에 대해 Conv1d 레이어 생성
         self.convs = nn.ModuleList([
@@ -46,7 +47,7 @@ class TextCNN(nn.Module):
             )
             for filter_size in filter_sizes
         ])
-        
+
         # BatchNorm 추가로 학습 안정화 및 성능 향상
         self.batch_norms = nn.ModuleList([
             nn.BatchNorm1d(num_filters) for _ in filter_sizes
