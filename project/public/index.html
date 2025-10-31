@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 오픈소스SW·AI 딥러닝 해커톤 대회 - 참가자 페이지</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .card {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-12">
+        <!-- 헤더 -->
+        <header class="text-center mb-12 fade-in">
+            <h1 class="text-5xl font-bold text-gray-800 mb-4">
+                🚀 2025 오픈소스SW·AI 딥러닝 해커톤 대회
+            </h1>
+            <p class="text-xl text-gray-600">
+                Fake News Detection
+            </p>
+            <div id="countdown" class="mt-3 inline-block bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-semibold">
+                ⏰ 제출 마감까지: 계산 중...
+            </div>
+            <script>
+                // 제출 마감 시간 설정 (UTC 기준)
+                const deadline = new Date('2025-11-01T09:00:00Z'); // 예시: 2025년 6월 15일 23:59:59 UTC
+                
+                function updateCountdown() {
+                    const now = new Date();
+                    const diff = deadline - now;
+                    
+                    if (diff <= 0) {
+                        document.getElementById('countdown').innerHTML = '🔴 제출 마감됨';
+                        document.getElementById('countdown').classList.remove('bg-yellow-100', 'text-yellow-800');
+                        document.getElementById('countdown').classList.add('bg-red-100', 'text-red-800');
+                        return;
+                    }
+                    
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    document.getElementById('countdown').innerHTML = 
+                        hours > 0 ? `⏰ 제출 마감까지: ${hours}시간 ${minutes}분 ${seconds}초` : `⏰ 제출 마감까지: ${minutes}분 ${seconds}초`;
+                }
+                
+                // 초기 실행
+                updateCountdown();
+                // 1초마다 업데이트
+                setInterval(updateCountdown, 1000);
+            </script>
+        </header>
+
+        <!-- 메인 카드 섹션 -->
+        <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
+            <!-- API 문서 카드 -->
+            <div class="card bg-white rounded-2xl shadow-lg p-8 fade-in" style="animation-delay: 0.1s;">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-100 p-3 rounded-lg">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 ml-4">API 문서</h2>
+                </div>
+                <p class="text-gray-600 mb-6">
+                    FastAPI 기반 RESTful API 문서를 확인하고 직접 테스트해보세요. Swagger UI를 통해 모든 엔드포인트를 인터랙티브하게 사용할 수 있습니다.
+                </p>
+                <div class="space-y-3">
+                    <a href="/docs" target="_blank" 
+                       class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg text-center transition duration-200">
+                        📖 Swagger UI 열기
+                    </a>
+                    <a href="/redoc" target="_blank"
+                       class="block w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg text-center transition duration-200">
+                        📑 ReDoc 열기
+                    </a>
+                </div>
+                <div class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex items-start mb-2">
+                        <svg class="w-6 h-6 text-red-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>                                      
+                        <h3 class="font-semibold text-red-800">API 인증 필수</h3>
+                    </div>
+                    <ul class="text-sm text-red-700 space-y-1">
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span>모든 API 엔드포인트 호출 시 <strong>사전에 제공된 API Key</strong>가 필요합니다.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span>Swagger UI로 테스트 시 Authorize 버튼을 클릭하여 API Key를 입력하세요.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span>직접 API 호출 시 요청 헤더에 <code class="bg-red-100 px-2 py-0.5 rounded text-red-900">X-API-Key</code>를 반드시 포함하세요.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="mr-2">•</span>
+                            <span>API Key 분실 시 진행요원에게 문의하세요.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 개발 환경 카드 -->
+            <div class="card bg-white rounded-2xl shadow-lg p-8 fade-in" style="animation-delay: 0.2s;">
+                <div class="flex items-center mb-4">
+                    <div class="bg-purple-100 p-3 rounded-lg">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 ml-4">개발 환경</h2>
+                </div>
+                <p class="text-gray-600 mb-6">
+                    브라우저에서 바로 사용할 수 있는 VS Code 개발 환경입니다. 모델 학습, 데이터 전처리, 코드 수정을 자유롭게 수행하세요.
+                </p>
+                <a href="/code/" target="_blank"
+                   class="block w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg text-center transition duration-200">
+                    💻 code-server 열기
+                </a>
+                <div class="mt-6 bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-700 mb-2">개발 환경 정보:</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li>• Python 3.10 + PyTorch 2.8.0</li>
+                        <li>• RTX 4090 GPU (CUDA 12.8 + cuDNN 9)</li>
+                        <li>• GPU 가속 지원</li>
+                        <li>• 
+                            <a href="#" onclick="showConstraintsModal(); return false;" class="text-purple-600 hover:text-purple-800 underline font-semibold">
+                                ⚠️ 학습 제약사항 확인
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex items-start mb-2">
+                        <svg class="w-5 h-5 text-red-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m6 4H6a2 2 0 01-2-2v-6a2 2 0 012-2h12a2 2 0 012 2v6a2 2 0 01-2 2zM8 11V7a4 4 0 118 0v4"></path>
+                        </svg>
+                        <h3 class="font-semibold text-red-800">접속 인증 필수</h3>
+                    </div>
+                    <ul class="text-sm text-red-700 space-y-1">
+                        <li>• code-server 접속 시 <strong>사전에 제공된 비밀번호</strong>를 입력해야 합니다.</li>
+                        <li>• 비밀번호를 분실한 경우 진행요원에게 문의하세요.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 모델 제출 섹션 -->
+        <div class="max-w-5xl mx-auto mb-12">
+            <div class="bg-white rounded-2xl shadow-lg p-8 fade-in" style="animation-delay: 0.3s;">
+                <div class="flex items-center mb-3">
+                    <div class="bg-green-100 p-3 rounded-lg">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 ml-4">🏆 모델 제출</h2>
+                </div>
+                <p class="text-gray-600 mb-8 text-center">
+                    평가 서버에 모델을 제출하고 점수를 확인하세요.<br>
+                    ※ 평가 요청 시 모델이 리로드됩니다. 제출 전 best.pt 및 모델 정의 코드가 올바르게 구성되어 있는지 반드시 점검하세요.
+                </p>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">평가 서버 API URL</label>
+                    <input type="url" id="taServerUrl" required
+                            placeholder="https://evaluation-server.com"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">참가자 서버 API URL</label>
+                    <input type="url" id="submissionUrl" required
+                            placeholder="http://localhost"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">팀명</label>
+                    <input type="text" id="teamName" required
+                            placeholder="team001"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">제출 비밀번호</label>
+                    <input type="password" id="submitPassword" required
+                           placeholder="제출 비밀번호"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                           autocomplete="current-password">
+                </div>
+                
+                <form id="submitForm">
+                    <button type="submit" id="submitButton"
+                            class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                        <span id="submitButtonText">평가 요청 제출</span>
+                        <svg id="submitSpinner" class="hidden animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </form>
+                
+                <!-- 결과 표시 영역 -->
+                <div id="resultArea" class="hidden mt-6 p-4 rounded-lg">
+                    <div id="successResult" class="hidden">
+                        <div class="flex items-center mb-3">
+                            <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="font-bold text-green-800">제출이 접수되었습니다!</h3>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <p class="text-gray-700">
+                                <span class="font-semibold">제출 ID:</span> 
+                                <code class="bg-gray-100 px-2 py-1 rounded text-xs" id="submissionId"></code>
+                            </p>
+                            <p class="text-gray-700">
+                                <span class="font-semibold">대기 순서:</span> 
+                                <span id="queuePosition" class="font-bold text-blue-600"></span>번째
+                            </p>
+                            <p class="text-gray-700">
+                                <span class="font-semibold">제출 시간:</span> 
+                                <span id="submitTime" class="text-gray-600"></span>
+                            </p>
+                            <div class="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                <p class="text-xs text-blue-800">
+                                    ℹ️ 평가가 진행 중입니다. 평가 결과는 조교 서버 랜딩 페이지에서 확인하실 수 있습니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="errorResult" class="hidden">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="font-bold text-red-800">제출 실패</h3>
+                        </div>
+                        <p class="text-sm text-red-700" id="errorMessage"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 프로젝트 정보 섹션 -->
+        <div class="max-w-5xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-lg p-8 fade-in" style="animation-delay: 0.4s;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">📊 프로젝트 개요</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-3xl">🧠</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-700 mb-2">딥러닝 모델</h3>
+                        <p class="text-sm text-gray-600">텍스트 분류 모델</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-3xl">⚡</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-700 mb-2">빠른 추론</h3>
+                        <p class="text-sm text-gray-600">GPU 가속으로 실시간 예측</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <span class="text-3xl">🔧</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-700 mb-2">편리한 개발</h3>
+                        <p class="text-sm text-gray-600">웹 기반 IDE로 즉시 시작</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 -->
+        <footer class="text-center mt-12 text-gray-600 fade-in" style="animation-delay: 0.5s;">
+            <!-- Powered by -->
+            <div class="flex items-center justify-center gap-3">
+              <span class="text-base font-semibold">Powered by</span>
+          
+              <!-- FastAPI -->
+              <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener" class="hover:opacity-80">
+                <img
+                  src="https://github.com/fastapi/fastapi/blob/master/docs/en/docs/img/logo-teal.svg?raw=true"
+                  alt="FastAPI logo"
+                  class="inline-block align-middle h-[18px] w-auto shrink-0"
+                />
+              </a>
+          
+              <!-- PyTorch -->
+              <a href="https://pytorch.org/" target="_blank" rel="noopener" class="hover:opacity-80">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/c/c6/PyTorch_logo_black.svg"
+                  alt="PyTorch logo"
+                  class="inline-block align-middle h-[22px] w-auto shrink-0"
+                />
+              </a>
+            </div>
+          
+            <!-- Sponsored by -->
+            <div class="flex items-center justify-center gap-3 mt-3">
+              <span class="text-base font-semibold">Sponsored by</span>
+              <a href="https://www.runpod.io/" target="_blank" rel="noopener" class="hover:opacity-80">
+                <img
+                  src="https://cdn.prod.website-files.com/67d20fb9f56ff2ec6a7a657d/685b36c74aa59531d0f1a347_runpod-logo-black.svg"
+                  alt="RunPod logo"
+                  class="inline-block align-middle h-[24px] w-auto shrink-0"
+                />
+              </a>
+            </div>
+          
+            <p class="text-sm text-gray-500 mt-2 max-w-3xl mx-auto leading-snug px-4">
+              Runpod's mission is to create the foundational platform for developers to build and run custom AI systems that scale.
+            </p>
+          </footer>
+    </div>
+
+    <!-- 제약사항 모달 -->
+    <div id="constraintsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 rounded-t-2xl">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">⚠️ 모델 학습 및 튜닝 제약사항</h2>
+                    <button onclick="closeConstraintsModal()" class="text-white hover:text-gray-200 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-6">
+
+                <!-- 모델 아키텍처 제약사항 -->
+                <div class="border-l-4 border-green-500 pl-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🏗️ 모델 아키텍처 제약사항</h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2">•</span>
+                            <span><strong>모델 크기:</strong> 최대 10GB 이하</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 학습 시간 제약사항 -->
+                <div class="border-l-4 border-red-500 pl-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">⏱️ 학습 시간 제약사항</h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">•</span>
+                            <span><strong>추론 시간:</strong> 30분 이내 (평가 서버에서 최대 시간을 넘어 실행 시 제출 실패됨)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 기타 제약사항 -->
+                <div class="border-l-4 border-purple-500 pl-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🤖 기타 제약사항</h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li class="flex items-start">
+                            <span class="text-purple-500 mr-2">•</span>
+                            <span><strong>사전 학습 모델 절대 사용 금지</strong></span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-purple-500 mr-2">•</span>
+                            <span>OpenAI, Google 등 <strong>외부 API를 가져와 사용하는 행위 금지</strong></span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-purple-500 mr-2">•</span>
+                            <span><strong>어떠한 형태로든 제공된 데이터셋 이외 외부 데이터셋을 추가로 가져와 사용하는 행위 금지</strong></span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="border-l-4 border-gray-500 pl-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">이외 제약사항 없음</h3>
+                </div>
+
+                <!-- 중요 공지사항 -->
+                <div class="bg-red-50 border-2 border-red-300 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 text-red-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="font-bold text-red-800 mb-2">제약사항 위반 시 패널티</h4>
+                            <p class="text-sm text-red-700">
+                                위 제약사항을 위반한 모델 제출 시 <strong>해당 제출은 자동으로 실격 처리</strong>됩니다. 
+                                학습 전 반드시 모든 설정이 제약사항을 준수하는지 확인하세요.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-b-2xl">
+                <button onclick="closeConstraintsModal()" 
+                        class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    확인했습니다
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 제약사항 모달 열기
+        function showConstraintsModal() {
+            document.getElementById('constraintsModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // 배경 스크롤 방지
+        }
+
+        // 제약사항 모달 닫기
+        function closeConstraintsModal() {
+            document.getElementById('constraintsModal').classList.add('hidden');
+            document.body.style.overflow = 'auto'; // 배경 스크롤 복원
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('constraintsModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConstraintsModal();
+            }
+        });
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeConstraintsModal();
+            }
+        });
+
+        // 헬스 체크
+        async function checkHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                console.log('Server health:', data);
+            } catch (error) {
+                console.error('Health check failed:', error);
+            }
+        }
+        checkHealth();
+
+        // 모델 제출 폼 처리
+        document.getElementById('submitForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // 입력값 가져오기
+            const taServerUrl = document.getElementById('taServerUrl').value.trim();
+            const submissionUrl = document.getElementById('submissionUrl').value.trim();
+            const teamName = document.getElementById('teamName').value.trim();
+            const submitPassword = document.getElementById('submitPassword').value.trim();
+            
+            // URL 및 비밀번호 검증
+            if (!taServerUrl || !submissionUrl || !teamName || !submitPassword) {
+                showError('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            // 로딩 상태 시작
+            setLoading(true);
+            hideResults();
+            
+            try {
+                // 조교 서버에 POST 요청
+                const submitUrl = `${taServerUrl}/submit?update_leaderboard=true`;
+                const requestBody = {
+                    team_name: teamName,
+                    url: submissionUrl,
+                    submit_password: submitPassword
+                };
+                
+                console.log('Submitting to:', submitUrl);
+                console.log('Request body:', requestBody);
+                
+                const response = await fetch(submitUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.detail || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                // 성공 결과 표시 (큐 시스템)
+                showSuccess(data);
+                
+            } catch (error) {
+                console.error('Submission error:', error);
+                showError(error.message || '제출 중 오류가 발생했습니다.');
+            } finally {
+                setLoading(false);
+            }
+        });
+        
+        // 로딩 상태 설정
+        function setLoading(isLoading) {
+            const button = document.getElementById('submitButton');
+            const buttonText = document.getElementById('submitButtonText');
+            const spinner = document.getElementById('submitSpinner');
+            
+            if (isLoading) {
+                button.disabled = true;
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+                buttonText.textContent = '제출 중...';
+                spinner.classList.remove('hidden');
+            } else {
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+                buttonText.textContent = '평가 요청 제출';
+                spinner.classList.add('hidden');
+            }
+        }
+        
+        // 결과 숨기기
+        function hideResults() {
+            document.getElementById('resultArea').classList.add('hidden');
+            document.getElementById('successResult').classList.add('hidden');
+            document.getElementById('errorResult').classList.add('hidden');
+        }
+        
+        // 성공 결과 표시 (큐 시스템)
+        function showSuccess(data) {
+            const resultArea = document.getElementById('resultArea');
+            const successResult = document.getElementById('successResult');
+            const submissionId = document.getElementById('submissionId');
+            const queuePosition = document.getElementById('queuePosition');
+            const submitTime = document.getElementById('submitTime');
+            
+            // 제출 ID (처음 8자만)
+            const shortId = data.submission_id ? data.submission_id.substring(0, 8) : 'N/A';
+            submissionId.textContent = shortId;
+            
+            // 대기 순서
+            queuePosition.textContent = data.position || 'N/A';
+            
+            // 제출 시간
+            if (data.submitted_at) {
+                const submittedDate = new Date(data.submitted_at);
+                submitTime.textContent = submittedDate.toLocaleString('ko-KR');
+            } else {
+                submitTime.textContent = new Date().toLocaleString('ko-KR');
+            }
+            
+            resultArea.classList.remove('hidden', 'bg-red-50');
+            resultArea.classList.add('bg-green-50');
+            successResult.classList.remove('hidden');
+            
+            // 화면 스크롤
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // 에러 결과 표시
+        function showError(message) {
+            const resultArea = document.getElementById('resultArea');
+            const errorResult = document.getElementById('errorResult');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = message;
+            
+            resultArea.classList.remove('hidden', 'bg-green-50');
+            resultArea.classList.add('bg-red-50');
+            errorResult.classList.remove('hidden');
+            
+            // 화면 스크롤
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

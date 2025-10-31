@@ -1,0 +1,19 @@
+fastapi==0.115.13
+uvicorn[standard]==0.32.1
+torch==2.8.0
+pandas==2.2.3
+python-multipart==0.0.20
+pydantic==2.10.6
+pyyaml==6.0.2
+tqdm==4.67.1
+scikit-learn==1.6.1
+
+# Jupyter Notebook 지원
+jupyter>=1.0.0
+notebook>=7.0.0
+ipykernel>=6.29.0
+ipywidgets>=8.1.0
+
+# 데이터 시각화
+matplotlib>=3.8.0
+seaborn>=0.13.0
