@@ -1,0 +1,31 @@
+# TextCNN 모델 학습 설정
+
+# 학습 하이퍼파라미터
+epochs: 15
+batch_size: 32
+lr: 0.001
+max_len: 256
+patience: 5
+num_workers: 0
+
+# Vocabulary 설정
+max_vocab_size: 20000
+min_freq: 1
+
+# 모델 하이퍼파라미터
+model:
+  embedding_dim: 128
+  filter_sizes: [3, 4, 5] # 다양한 n-gram 패턴 포착 (3, 4, 5-gram)
+  num_filters: 100 # 각 필터 크기당 필터 개수
+  dropout: 0.5
+
+# 데이터 경로
+data:
+  train_path: "data/train.csv"
+  val_path: "data/validation.csv"
+  text_fields: ["title", "text"]
+
+# 출력 설정
+output:
+  model_dir: "models"
+  log_dir: "logs"
