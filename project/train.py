@@ -9,7 +9,7 @@ import sys
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 import yaml
 from tqdm import tqdm
 
@@ -37,7 +37,7 @@ def train_one_epoch(model, train_loader, optimizer, criterion, device, max_norm=
     model.train()
     running_loss = 0.0
     total_examples = 0
-    
+
     pbar = tqdm(train_loader, desc="Training")
     for batch in pbar:
         inputs, lengths, labels = batch
@@ -45,22 +45,22 @@ def train_one_epoch(model, train_loader, optimizer, criterion, device, max_norm=
         inputs = inputs.to(device)
         lengths = lengths.to(device)
         labels = labels.to(device)
-        
+
         optimizer.zero_grad()
         logits = model(inputs, lengths)
         loss = criterion(logits, labels)
         loss.backward()
-        
+
         # Gradient clipping
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
-        
+
         optimizer.step()
-        
+
         running_loss += loss.item() * labels.size(0)
         total_examples += labels.size(0)
-        
+
         pbar.set_postfix({'loss': loss.item()})
-    
+
     return running_loss / max(total_examples, 1)
 
 
@@ -70,10 +70,10 @@ def evaluate(model, val_loader, criterion, device):
     total_loss = 0.0
     total_examples = 0
     correct = 0
-    
+
     y_true = []
     y_pred = []
-    
+
     with torch.no_grad():
         pbar = tqdm(val_loader, desc="Evaluating")
         for batch in pbar:
@@ -81,19 +81,19 @@ def evaluate(model, val_loader, criterion, device):
             inputs = inputs.to(device)
             lengths = lengths.to(device)
             labels = labels.to(device)
-            
+
             logits = model(inputs, lengths)
             loss = criterion(logits, labels)
-            
+
             total_loss += loss.item() * labels.size(0)
             total_examples += labels.size(0)
-            
+
             predictions = torch.argmax(logits, dim=-1)
             correct += (predictions == labels).sum().item()
-            
+
             y_true.extend(labels.cpu().tolist())
             y_pred.extend(predictions.cpu().tolist())
-    
+
     avg_loss = total_loss / max(total_examples, 1)
     accuracy = correct / max(total_examples, 1)
     precision = precision_score(y_true, y_pred, average='macro')
@@ -106,20 +106,20 @@ def train_model(model_name: str, config_path: str, device: str = None):
     """모델 학습 메인 함수"""
     # 설정 로드
     config = load_config(config_path)
-    
+
     # 디바이스 설정
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     else:
         device = torch.device(device)
-    
+
     logger.info(f"Using device: {device}")
-    
+
     # 데이터 로더 생성
     logger.info("Loading data...")
     train_path = Path(config['data']['train_path'])
     val_path = Path(config['data']['val_path'])
-    
+
     train_loader, val_loader, vocab, tokenizer = build_dataloaders(
         train_path=train_path,
         val_path=val_path,
@@ -129,55 +129,72 @@ def train_model(model_name: str, config_path: str, device: str = None):
         max_vocab_size=config['max_vocab_size'],
         text_fields=config['data']['text_fields'],
     )
-    
+
     logger.info(f"Vocabulary size: {len(vocab)}")
     logger.info(f"Training samples: {len(train_loader.dataset)}")
     logger.info(f"Validation samples: {len(val_loader.dataset)}")
-    
+
     # 모델 생성
     logger.info(f"Creating model: {model_name}")
     model_cls = MODEL_REGISTRY[model_name]
-    model_config = config.get('model', config.get('models', {}).get(model_name, {}))
+    model_config = config.get('model', config.get(
+        'models', {}).get(model_name, {}))
     model = model_cls(
         vocab_size=len(vocab),
         num_classes=2,
         **model_config
     )
     model = model.to(device)
-    
-    # 옵티마이저 및 스케줄러
-    optimizer = AdamW(model.parameters(), lr=config['lr'])
-    scheduler = ReduceLROnPlateau(optimizer, mode='max', patience=1, factor=0.5)
+
+    # 옵티마이저 및 스케줄러 (weight decay 추가로 정규화 강화)
+    optimizer = AdamW(model.parameters(), lr=config['lr'], weight_decay=0.01)
+    scheduler = ReduceLROnPlateau(
+        optimizer, mode='max', patience=2, factor=0.5, min_lr=1e-6)
     criterion = nn.CrossEntropyLoss()
-    
+
     # 학습
     logger.info(f"Starting training for {config['epochs']} epochs...")
     best_accuracy = 0.0
+    best_combined = 0.0  # F1과 accuracy의 가중 평균
     patience_counter = 0
-    
+
     for epoch in range(1, config['epochs'] + 1):
         logger.info(f"\nEpoch {epoch}/{config['epochs']}")
-        
+
         # 학습
-        train_loss = train_one_epoch(model, train_loader, optimizer, criterion, device)
-        
+        train_loss = train_one_epoch(
+            model, train_loader, optimizer, criterion, device)
+
         # 평가
-        val_loss, val_accuracy, val_precision, val_recall, val_f1 = evaluate(model, val_loader, criterion, device)
-        
-        # 스케줄러 업데이트
-        scheduler.step(val_accuracy)
-        
+        val_loss, val_accuracy, val_precision, val_recall, val_f1 = evaluate(
+            model, val_loader, criterion, device)
+
+        # 스케줄러 업데이트 (F1 score 기준으로 개선)
+        scheduler.step(val_f1)
+
         logger.info(f"Train Loss: {train_loss:.4f}")
-        logger.info(f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}, Val Precision: {val_precision:.4f}, Val Recall: {val_recall:.4f}, Val F1: {val_f1:.4f}")
-        
-        # Best model 저장
+        logger.info(
+            f"Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}, Val Precision: {val_precision:.4f}, Val Recall: {val_recall:.4f}, Val F1: {val_f1:.4f}")
+
+        # Best model 저장 (F1과 accuracy의 가중 평균 사용)
+        # 대회 평가 기준이 F1이므로 F1에 더 높은 가중치 부여
+        combined_score = 0.7 * val_f1 + 0.3 * val_accuracy
+
+        # combined_score 또는 accuracy가 개선되면 저장
+        should_save = False
+        if combined_score > best_combined:
+            best_combined = combined_score
+            should_save = True
         if val_accuracy > best_accuracy:
             best_accuracy = val_accuracy
+            should_save = True
+
+        if should_save:
             patience_counter = 0
-            
+
             model_dir = Path(config['output']['model_dir'])
             model_dir.mkdir(parents=True, exist_ok=True)
-            
+
             save_path = model_dir / f"{model_name}_best.pt"
             torch.save({
                 'model': model,
@@ -195,32 +212,35 @@ def train_model(model_name: str, config_path: str, device: str = None):
                 },
                 'accuracy': best_accuracy,
             }, save_path)
-            logger.info(f"✓ Best model saved: {save_path} (accuracy: {best_accuracy:.4f})")
+            logger.info(
+                f"✓ Best model saved: {save_path} (accuracy: {best_accuracy:.4f})")
         else:
             patience_counter += 1
             if patience_counter >= config['patience']:
                 logger.info(f"Early stopping triggered at epoch {epoch}")
                 break
-    
-    logger.info(f"\nTraining complete! Best validation accuracy: {best_accuracy:.4f}")
-    
+
+    logger.info(
+        f"\nTraining complete! Best validation accuracy: {best_accuracy:.4f}")
+
     # 최종 모델을 best.pt로 복사 (제출용)
     model_dir = Path(config['output']['model_dir'])
     best_model_path = model_dir / f"{model_name}_best.pt"
     final_best_path = model_dir / "best.pt"
-    
+
     if best_model_path.exists():
         import shutil
         shutil.copy2(best_model_path, final_best_path)
         logger.info(f"✓ Final model saved as: {final_best_path}")
     else:
         logger.warning(f"Best model file not found: {best_model_path}")
-    
+
     return model, best_accuracy
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Train fake news detection model")
+    parser = argparse.ArgumentParser(
+        description="Train fake news detection model")
     parser.add_argument(
         "--model",
         type=str,
@@ -240,13 +260,13 @@ def main():
         default=None,
         help="Device to use (cpu/cuda)"
     )
-    
+
     args = parser.parse_args()
     if args.config is None:
         config_path = f"configs/{args.model}.yaml"
     else:
         config_path = args.config
-    
+
     # 학습 실행
     try:
         train_model(args.model, config_path, args.device)

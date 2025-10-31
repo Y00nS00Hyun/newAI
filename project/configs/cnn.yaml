@@ -1,23 +1,23 @@
 # TextCNN 모델 학습 설정
 
 # 학습 하이퍼파라미터
-epochs: 15
-batch_size: 32
-lr: 0.001
-max_len: 256
-patience: 5
+epochs: 25 # 충분한 학습 기회 제공
+batch_size: 64 # 배치 크기 증가로 안정적 학습
+lr: 0.001 # 학습률
+max_len: 512 # 더 긴 텍스트 처리
+patience: 8 # 조기 종료 여유 확보
 num_workers: 0
 
 # Vocabulary 설정
-max_vocab_size: 20000
+max_vocab_size: 30000 # 더 많은 어휘로 표현력 향상
 min_freq: 1
 
 # 모델 하이퍼파라미터
 model:
-  embedding_dim: 128
-  filter_sizes: [3, 4, 5] # 다양한 n-gram 패턴 포착 (3, 4, 5-gram)
-  num_filters: 100 # 각 필터 크기당 필터 개수
-  dropout: 0.5
+  embedding_dim: 256 # 임베딩 차원 증가로 표현력 향상
+  filter_sizes: [3, 4, 5, 6] # 다양한 n-gram 패턴 포착 (3~6-gram, 최적화)
+  num_filters: 150 # 필터 개수 증가로 특징 추출 능력 향상
+  dropout: 0.35 # 과적합 방지 (최적화된 값)
 
 # 데이터 경로
 data:
