@@ -1,35 +1,56 @@
-"""
-모델 학습 스크립트
-"""
+"""모델 학습 스크립트"""
 import argparse
 import logging
-from pathlib import Path
 import sys
+from pathlib import Path
 
+import pandas as pd
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
-from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import yaml
 from tqdm import tqdm
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 from model_definitions import MODEL_REGISTRY
 from utils.dataset import build_dataloaders
 from utils.augmentation import apply_augmentation
-from sklearn.metrics import precision_score, recall_score, f1_score
-# 로깅 설정
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
 def load_config(config_path: str):
     """YAML 설정 파일 로드"""
     with open(config_path, 'r', encoding='utf-8') as f:
-        config = yaml.safe_load(f)
-    return config
+        return yaml.safe_load(f)
+
+
+def compute_class_weights(train_path: str, device: str):
+    """클래스 불균형을 고려한 가중치 계산"""
+    train_df = pd.read_csv(train_path)
+    label_counts = train_df['label'].value_counts()
+    total = len(train_df)
+
+    real_count = label_counts.get('real', 0)
+    fake_count = label_counts.get('fake', 0)
+
+    if real_count > 0 and fake_count > 0:
+        real_weight = total / (2.0 * real_count)
+        fake_weight = total / (2.0 * fake_count)
+        weights = torch.tensor([real_weight, fake_weight],
+                               dtype=torch.float32).to(device)
+        logger.info(
+            f"Class weights - Real: {real_weight:.3f}, Fake: {fake_weight:.3f}")
+        logger.info(f"Label distribution - Real: {real_count} ({real_count/total*100:.1f}%), "
+                    f"Fake: {fake_count} ({fake_count/total*100:.1f}%)")
+        return weights
+    else:
+        logger.warning(
+            "Could not compute class weights, using uniform weights")
+        return None
 
 
 def train_one_epoch(model, train_loader, optimizer, criterion, device, max_norm=5.0):
@@ -146,12 +167,14 @@ def train_model(model_name: str, config_path: str, device: str = None):
     )
     model = model.to(device)
 
-    # 옵티마이저 및 스케줄러 (weight decay 추가로 정규화 강화)
-    # Weight decay 약간 낮춤
-    optimizer = AdamW(model.parameters(), lr=config['lr'], weight_decay=0.005)
+    # 옵티마이저 및 스케줄러
+    optimizer = AdamW(model.parameters(), lr=config['lr'], weight_decay=0.01)
     scheduler = ReduceLROnPlateau(
-        optimizer, mode='max', patience=3, factor=0.7, min_lr=1e-7)  # 더 부드러운 학습률 감소
-    criterion = nn.CrossEntropyLoss()
+        optimizer, mode='max', patience=3, factor=0.7, min_lr=1e-7)
+
+    # 클래스 가중치 계산
+    class_weights = compute_class_weights(config['data']['train_path'], device)
+    criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     # 학습
     logger.info(f"Starting training for {config['epochs']} epochs...")
