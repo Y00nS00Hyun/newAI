@@ -1,0 +1,32 @@
+model: improved_textcnn
+
+data:
+  train_csv: data/train.csv
+  val_csv: data/val.csv
+  text_fields: ["title", "text"]
+  max_len: 512
+  batch_size: 64
+  num_workers: 2
+  max_vocab_size: 30000
+
+model_config:
+  vocab_size: 30000 # 학습 후 실제 vocab 크기로 대체됨
+  num_classes: 2
+  embedding_dim: 400
+  kernel_sizes: [3, 4, 5]
+  num_filters_per_kernel: 400
+  dilation_cycle: [1, 2]
+  dropout: 0.4
+  embed_dropout: 0.2
+  padding_idx: 0
+
+train_config:
+  epochs: 10
+  optimizer: adamw
+  lr: 3e-4
+  weight_decay: 1e-4
+  scheduler: cosine
+  warmup_steps: 800
+  label_smoothing: 0.1
+  grad_clip: 1.0
+  seed: 42
