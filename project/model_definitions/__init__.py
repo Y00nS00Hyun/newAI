@@ -1,11 +1,8 @@
-from .bilstm import BiLSTM
-from .textcnn import TextCNN
-from .improved_textcnn import ImprovedTextCNN
+from .cnn import TextCNN
 
 MODEL_REGISTRY = {
-    "bilstm": BiLSTM,
+    "cnn": TextCNN,
     "textcnn": TextCNN,
-    "improved_textcnn": ImprovedTextCNN,   # ← 추가
 }
 
-__all__ = ["MODEL_REGISTRY", "BiLSTM", "TextCNN", "ImprovedTextCNN"]
+__all__ = ["MODEL_REGISTRY", "TextCNN"]
